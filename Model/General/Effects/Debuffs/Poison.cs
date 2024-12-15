@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Model.Plants;
+namespace Model.General.Effects.Debuffs;
 
-public abstract class Plant
+public class Poison : IEffect
 {
-
 }
