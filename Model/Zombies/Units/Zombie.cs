@@ -9,7 +9,6 @@ namespace Model.Zombies.Units;
 
 public abstract class Zombie
 {
-
     protected int Health { get; set; }
     protected int Damage { get; set; }
     protected IEffect? AppliedEffect { get; set; }

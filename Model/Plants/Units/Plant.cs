@@ -1,18 +1,42 @@
 ﻿using Model.General.Effects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Model.General.Entity;
+using Model.General.LogTools;
 
 namespace Model.Plants.Units;
 
-public abstract class Plant
+public abstract class Plant : GameEntity, IAction
 {
-    protected int Health { get; set; }
-    protected int Damage { get; set; }
-    protected AttackType.Attack? Attack { get; set; }
-    protected IEffect? AppliedEffect { get; set; }  
-    protected int Cost { get; set; }
-    protected List<IEffect> effects { get; set; } = new List<IEffect>();
+    public event Action? OnAction;
+    public bool IsPlantable { get; private set; }
+
+    private Health _health;
+    private Cooldown _actionCooldown;
+    private Cooldown _plantCooldown;
+    private int _cost;
+    protected List<IEffect> Effects { get; set; } = new List<IEffect>();
+
+    public Plant(float maxHealth, float actionCooldown, float plantCooldown, int cost)
+    {
+        _health = new Health(maxHealth, Destroy);
+        _actionCooldown = new Cooldown(actionCooldown, Action);
+        _plantCooldown = new Cooldown(plantCooldown, () => IsPlantable = true);
+        _cost = cost;
+
+        Logger.Log($"plant {{{this}}} has been planted");
+    }
+
+    public virtual void Action()
+    {
+        OnAction?.Invoke();
+    }
+
+    public void Hit(float damage)
+    {
+        _health.TakeDamage(damage);
+    }
+
+    public override string ToString()
+    {
+        return $"{GetType().Name}";
+    }
 }

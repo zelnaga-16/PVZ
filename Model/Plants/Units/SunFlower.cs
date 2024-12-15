@@ -8,12 +8,5 @@ namespace Model.Plants.Units;
 
 public class SunFlower : Plant
 {
-    public SunFlower() 
-    {
-        Cost = 25;
-        Damage = 0;
-        Attack = null;
-        AppliedEffect = null;
-        Health = 100;
-    }
+    public SunFlower() : base(25, 10, 15, 50) { }
 }
