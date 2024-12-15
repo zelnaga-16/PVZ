@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Model.Zombies;
+namespace Model.General.Effects.Debuffs;
 
-public abstract class Zombie
+public class Poison : IEffect
 {
-
 }
