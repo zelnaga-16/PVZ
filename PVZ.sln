@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameAPI", "GameAPI\GameAPI.csproj", "{CDDF7E95-E09D-468F-8916-3BCDEDA9EA6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModel", "TestModel\TestModel.csproj", "{4F5B4B57-01A0-4156-8E98-FEBF5BB97F2F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{CDDF7E95-E09D-468F-8916-3BCDEDA9EA6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDDF7E95-E09D-468F-8916-3BCDEDA9EA6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDDF7E95-E09D-468F-8916-3BCDEDA9EA6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F5B4B57-01A0-4156-8E98-FEBF5BB97F2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F5B4B57-01A0-4156-8E98-FEBF5BB97F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F5B4B57-01A0-4156-8E98-FEBF5BB97F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F5B4B57-01A0-4156-8E98-FEBF5BB97F2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
