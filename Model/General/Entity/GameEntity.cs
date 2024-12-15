@@ -20,6 +20,7 @@ public abstract class GameEntity
         Logger = GetLogger.GetLoggerInstance();
     }
 
+    public abstract void Update();
     protected virtual void Destroy() => OnDestroy?.Invoke();
     protected virtual void HitBoxEnter(GameEntity other) => OnHitBoxEnter?.Invoke();
 }

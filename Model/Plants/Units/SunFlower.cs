@@ -8,5 +8,12 @@ namespace Model.Plants.Units;
 
 public class SunFlower : Plant
 {
-    public SunFlower() : base(25, 10, 15, 50) { }
+    public SunFlower() : base(25, 3, 15, 50) 
+    {
+    
+    }
+    public override void Action()
+    {
+        base.Action();
+    }
 }
