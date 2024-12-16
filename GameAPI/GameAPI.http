@@ -1,6 +1,15 @@
 @GameAPI_HostAddress = http://localhost:5236
 
-GET {{GameAPI_HostAddress}}/weatherforecast/
+GET {{GameAPI_HostAddress}}/users/MainGet?apiKey=ergetybszcytyt&command=ewertertwe
 Accept: application/json
 
+
+
+###
+
+GET {{GameAPI_HostAddress}}/users/Plant?apiKey=ergetybszcytyt&X=2&Y=3&plantName=Sunflower
+Accept: application/json
+###
+GET {{GameAPI_HostAddress}}/home/index
+Accept: application/json
 ###

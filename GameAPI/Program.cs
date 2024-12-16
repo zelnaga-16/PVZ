@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 var builder = WebApplication.CreateBuilder(args);
@@ -10,10 +11,16 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseRouting();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Users}/{action=MainGet}"
+    );
 
 app.Run();
