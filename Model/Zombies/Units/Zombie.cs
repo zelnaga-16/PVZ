@@ -24,7 +24,7 @@ public abstract class Zombie : GameEntity, IAction
 
     public void Action()
     {
-        throw new NotImplementedException();
+        OnAction?.Invoke();
     }
 
     public void Hit(float damage)
