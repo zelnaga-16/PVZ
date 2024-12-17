@@ -22,19 +22,19 @@ public class Game
         GameEntities = new EntityList(this);
         ToRemoveList = new List<GameEntity>();
         ToAddList = new List<GameEntity>();
-        CalculateTick();
+        CalculateTick(DateTime.Now);
     }
 
-    private void CalculateTick()
+    private void CalculateTick(DateTime tickNow)
     {
-        DateTime tickNow = DateTime.Now;
+        //tickNow = DateTime.Now; // just to have backup
         Tick = (tickNow - _lastTick).TotalMilliseconds * 0.001;
         _lastTick = tickNow;
     }
 
-    public void GameTick()
+    public void GameTick(DateTime tickNow)
     {
-        CalculateTick();
+        CalculateTick(tickNow);
         GameEntities.UpdateEntities();
         GameEntities.RemoveList(ToRemoveList);
         GameEntities.AddList(ToAddList);

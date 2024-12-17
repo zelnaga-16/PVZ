@@ -11,7 +11,7 @@ public class PlantsFabric : EntitiesFabric
     {
         Plant plant = new SunFlower(Game, position);
 
-        Game.GameEntities.Add(plant);
+        //Game.GameEntities.Add(plant);
         return plant;
     }
 
@@ -19,7 +19,7 @@ public class PlantsFabric : EntitiesFabric
     {
         Plant plant = new Peashooter(Game, position);
 
-        Game.GameEntities.Add(plant);
+        //Game.GameEntities.Add(plant);
         return plant;
     }
 }

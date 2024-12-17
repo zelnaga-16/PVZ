@@ -6,6 +6,9 @@ using Model.Plants.Units;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using GameAPI.Models;
+using Model.Plants;
+using System.Xml.Linq;
+using Model.Zombies.Units;
 
 namespace GameAPI.Controllers;
 
@@ -53,7 +56,7 @@ public class GameController : Controller
             _context.Game.Add(GameToDB);
             _context.SaveChanges();
 
-            Task.Run(() => UpdateGames(game));
+            Task.Run(() => UpdateGame(game));
 
         }
         else
@@ -63,6 +66,19 @@ public class GameController : Controller
         return Ok("your key is: "+gameKey);
     }
     [HttpGet]
+    public IActionResult Progress(string apiKey, string gameKey) 
+    {
+        Models.Game gameFromDb = _context.Game.Where((g) => g.User.APIKey == apiKey && g.GameKey == gameKey).FirstOrDefault();
+        if (gameFromDb == null)
+        {
+            return NotFound("Can't find your game session. Are you sure you created it?");
+        }
+        Model.General.Game MainGame = _games[gameFromDb.GameKey];
+        return Ok();
+
+    }
+
+    [HttpGet]
     public IActionResult Plant(string apiKey, string gameKey, double X, int Y, string plantName)
     {
         Models.Game gameFromDb = _context.Game.Where((g) => g.User.APIKey == apiKey && g.GameKey == gameKey).FirstOrDefault();
@@ -71,11 +87,6 @@ public class GameController : Controller
             return NotFound("Can't find your game session. Are you sure you created it?");
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
-
-        MainGame.GameEntities.Add(new Peashooter(MainGame, new Vector2(X, Y)));
-
-        return Ok("");
-        
         
         if (X > 10 || X <= 0)
         {
@@ -85,51 +96,64 @@ public class GameController : Controller
         {
             return BadRequest("Your Y coordinate is eather smaller than 1 or bigger than 4.");
         }
-        Transform transform = new Transform();
-        transform.Position = new Vector2(X, Y);
+        PlantsFabric plantsFabric = new PlantsFabric(MainGame);
+
+        GameEntity plant = ChoosePlant(plantsFabric, new Vector2(X, Y),plantName);
 
 
-        GameEntity gameEntity = EntityCheck<Plant>(transform);
-        if (gameEntity == null)
+        GameEntity gameEntity = EntityCheck<Plant>(MainGame,plant.Transform);
+        if (gameEntity != null)
         {
             return BadRequest("You tried to place a plant where another plant is. Please remove previous plant if you realy want to place your here.");
         }
+        MainGame.ToAddList.Add(plant);
 
 
-        return Ok($"{apiKey}");
+        return Ok("Great, you planted successfully.");
     }
-    private void UpdateGames(Model.General.Game game) 
+    private GameEntity ChoosePlant(PlantsFabric fabric,Vector2 pos,string plantName) 
     {
-        while (true)
+        switch (plantName.ToLower()) 
         {
-            game.GameTick();
-            Console.WriteLine("Yahoo");
-            
+            case "peashooter":
+                return fabric.CreatePeashooter(pos);
+            case "sunflower":
+                return fabric.CreateSunFlower(pos);
         }
-    }
-    private GameEntity EntityCheck<T>(Transform hitbox) where T : GameEntity
-    {
+
         return null;
     }
-    private bool HitBoxCheck(Transform hitbox1, Transform hitbox2)
+    private void UpdateGame(Model.General.Game game,bool IsOpponentBot) 
     {
-
-        if (hitbox1.Position.Y != hitbox2.Position.Y) return false;
-
-        if (hitbox1.Position.X == hitbox2.Position.X)
+        OpponentBot opponentBot = new OpponentBot(game);
+        if (IsOpponentBot == false)
         {
-            return true;
+            while (true)
+            {
+                game.GameTick(DateTime.Now);
+                Console.WriteLine("Yahoo");
+            }
         }
-
-        if (hitbox1.Position.X < hitbox2.Position.X && (hitbox1.Position.X + hitbox1.Size.X / 2) >= (hitbox2.Position.X - hitbox2.Size.X / 2))
+        else 
         {
-            return true;
+            while (true)
+            {
+                game.GameTick(DateTime.Now);
+                Console.WriteLine("Yahoo");
+                
+            }
         }
-
-        if (hitbox1.Position.X > hitbox2.Position.X && (hitbox2.Position.X + hitbox2.Size.X / 2) >= (hitbox1.Position.X - hitbox1.Size.X / 2))
-        {
-            return true;
-        }
-        return false;
     }
+    private GameEntity EntityCheck<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
+    {
+        foreach (T entity in game.GameEntities)
+        {
+            if (hitbox.isInside(entity.Transform))
+            {
+                return entity;
+            }
+        }
+        return null;
+    }
+    
 }

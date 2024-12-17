@@ -1,4 +1,6 @@
-﻿namespace Model.General.Entity;
+﻿using Model.Zombies.Units;
+
+namespace Model.General.Entity;
 
 public class EntityList : List<GameEntity>
 {
@@ -25,9 +27,15 @@ public class EntityList : List<GameEntity>
 
     public void UpdateEntities()
     {
+
         foreach (GameEntity entity in this)
         {
             entity.Update();
+            if (entity is Zombie) 
+            {
+            
+            }
+            
         }
     }
 

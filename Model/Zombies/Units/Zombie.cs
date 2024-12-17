@@ -17,7 +17,7 @@ public abstract class Zombie : GameEntity, IAction, IHittable
 
     public Zombie(Game game, Vector2 position, float maxHealth, float moveSpeed,  int cost) : base(game)
     {
-        Transform.Size = new Vector2(1, 1); ;
+        Transform.Size = new Vector2(1, 1);
         Transform.Position = new Vector2(position.X - Transform.Size.X * 0.5, position.Y);
         _move = new Move(this, -moveSpeed);
         
@@ -35,7 +35,7 @@ public abstract class Zombie : GameEntity, IAction, IHittable
 
     protected override GameEntity IsHitBoxEnter<T>()
     {
-        return base.IsHitBoxEnter<GameEntity>();
+        return base.IsHitBoxEnter<T>();
     }
 
     public void Action()
