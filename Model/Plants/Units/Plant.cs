@@ -18,7 +18,8 @@ public abstract class Plant : GameEntity, IAction, IHittable
 
     public Plant(Game game, Vector2 position, float maxHealth, float actionCooldown, float plantCooldown, int cost) : base(game)
     {
-        Transform.Position = position;
+        Transform.Size = new Vector2(1, 1);
+        Transform.Position = new Vector2(position.X - Transform.Size.X * 0.5, position.Y);
         game.DecreaseSun(_cost);
         
         _health = new Health(maxHealth, Destroy);
@@ -29,13 +30,13 @@ public abstract class Plant : GameEntity, IAction, IHittable
         Logger.Log($"plant {{{this}}} has been planted");
     }
 
-    public override void Update(double tick)
+    public override void Update()
     {
-        base.Update(tick);
-        _actionCooldown.Tick(tick);
+        base.Update();
+        _actionCooldown.Tick(Game.Tick);
 
         if (!IsPlantable)
-            _plantCooldown.Tick(tick);
+            _plantCooldown.Tick(Game.Tick);
     }
 
     public virtual void Action()

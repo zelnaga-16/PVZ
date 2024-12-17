@@ -21,6 +21,7 @@ public struct Health
     public void TakeDamage(float damage)
     {
         _health -= damage;
+        Console.WriteLine("HEALTH = " + _health);
 
         if(_health <= 0)
         {
