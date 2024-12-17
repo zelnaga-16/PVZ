@@ -10,27 +10,34 @@ namespace Model.General;
 public class Game
 {
     public EntityList GameEntities { get; private set; }
+    public List<GameEntity> ToRemoveList { get; private set; }
+    public List<GameEntity> ToAddList { get; private set; }
     public int Suns { get; private set; }
 
-    private double _tick = 0;
+    public double Tick = 0;
     private DateTime _lastTick = DateTime.UtcNow;
 
     public Game()
     {
-        GameEntities = new EntityList();
-        CalculateTick(DateTime.Now);
+        GameEntities = new EntityList(this);
+        ToRemoveList = new List<GameEntity>();
+        ToAddList = new List<GameEntity>();
+        CalculateTick();
     }
 
-    private void CalculateTick(DateTime tickNow)
+    private void CalculateTick()
     {
-        _tick = (tickNow - _lastTick).TotalMilliseconds * 0.001;
+        DateTime tickNow = DateTime.Now;
+        Tick = (tickNow - _lastTick).TotalMilliseconds * 0.001;
         _lastTick = tickNow;
     }
 
     public void GameTick()
     {
-        CalculateTick(DateTime.Now);
-        GameEntities.UpdateEntities(_tick);
+        CalculateTick();
+        GameEntities.UpdateEntities();
+        GameEntities.RemoveList(ToRemoveList);
+        GameEntities.AddList(ToAddList);
     }
 
     public void IncreaseSun(int suns) => Suns += suns;

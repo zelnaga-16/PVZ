@@ -6,9 +6,9 @@ namespace Model.Zombies.Units;
 public class BasicZombie : Zombie
 {
     public BasicZombie(Game game, Vector2 position) : base(game, position, 100, 0.3f, 1) { }
-    public override void Update(double tick)
+    public override void Update()
     {
-        base.Update(tick);
+        base.Update();
         Logger.Log("x: " + Transform.Position.X);
     }
 }

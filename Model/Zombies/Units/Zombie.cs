@@ -1,6 +1,7 @@
 ﻿using Model.General;
 using Model.General.Effects;
 using Model.General.Entity;
+using Model.Plants.Units;
 
 namespace Model.Zombies.Units;
 
@@ -16,8 +17,9 @@ public abstract class Zombie : GameEntity, IAction, IHittable
 
     public Zombie(Game game, Vector2 position, float maxHealth, float moveSpeed,  int cost) : base(game)
     {
-        Transform.Position = position;
-        _move = new Move(this, moveSpeed);
+        Transform.Size = new Vector2(1, 1); ;
+        Transform.Position = new Vector2(position.X - Transform.Size.X * 0.5, position.Y);
+        _move = new Move(this, -moveSpeed);
         
         _health = new Health(maxHealth, Destroy);
         _cost = cost;
@@ -25,10 +27,15 @@ public abstract class Zombie : GameEntity, IAction, IHittable
         Logger.Log($"zombie {{{this}}} has been spawned");
     }
 
-    public override void Update(double tick)
+    public override void Update()
     {
-        base.Update(tick);
-        _move.MoveEntity(tick);
+        base.Update();
+        _move.MoveEntity(Game.Tick);
+    }
+
+    protected override GameEntity IsHitBoxEnter<T>()
+    {
+        return base.IsHitBoxEnter<GameEntity>();
     }
 
     public void Action()

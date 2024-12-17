@@ -19,6 +19,6 @@ public class Move
 
     public void MoveEntity(double tick)
     {
-        _gameEntity.Transform.Position = new Vector2(_gameEntity.Transform.Position.X + -_moveSpeed * tick, _gameEntity.Transform.Position.Y);
+        _gameEntity.Transform.Position = new Vector2(_gameEntity.Transform.Position.X + _moveSpeed * tick, _gameEntity.Transform.Position.Y);
     }
 }
