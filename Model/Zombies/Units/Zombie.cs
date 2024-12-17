@@ -1,25 +1,34 @@
-﻿using Model.General.Effects;
+﻿using Model.General;
+using Model.General.Effects;
 using Model.General.Entity;
 
 namespace Model.Zombies.Units;
 
-public abstract class Zombie : GameEntity, IAction
+public abstract class Zombie : GameEntity, IAction, IHittable
 {
     public event Action? OnAction;
     public bool IsPlantable { get; private set; }
 
+    private Move _move;
     private Health _health;
     private int _cost;
     protected List<IEffect> Effects { get; set; } = new List<IEffect>();
 
-    public Zombie(Vector2 position, float maxHealth,  int cost)
+    public Zombie(Game game, Vector2 position, float maxHealth, float moveSpeed,  int cost) : base(game)
     {
-        Position = position;
+        Transform.Position = position;
+        _move = new Move(this, moveSpeed);
         
         _health = new Health(maxHealth, Destroy);
         _cost = cost;
 
-        Logger.Log($"plant {{{this}}} has been planted");
+        Logger.Log($"zombie {{{this}}} has been spawned");
+    }
+
+    public override void Update(double tick)
+    {
+        base.Update(tick);
+        _move.MoveEntity(tick);
     }
 
     public void Action()
@@ -30,10 +39,5 @@ public abstract class Zombie : GameEntity, IAction
     public void Hit(float damage)
     {
         _health.TakeDamage(damage);
-    }
-
-    public override string ToString()
-    {
-        return $"{GetType().Name}";
     }
 }

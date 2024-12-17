@@ -8,11 +8,11 @@ public class EntityList : List<GameEntity>
 
         entity.OnDestroy += () => Remove(entity);
     }
-    public void UpdateEntities() 
+    public void UpdateEntities(double tick) 
     {
         foreach (GameEntity entity in this) 
         {
-            entity.Update();
+            entity.Update(tick);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Model.General.Effects;
+﻿using Model.General;
+using Model.General.Effects;
 using Model.General.Entity;
 using Model.General.LogTools;
 
@@ -15,10 +16,11 @@ public abstract class Plant : GameEntity, IAction, IHittable
     private int _cost;
     protected List<IEffect> Effects { get; set; } = new List<IEffect>();
 
-    public Plant(Vector2 position, float maxHealth, float actionCooldown, float plantCooldown, int cost)
+    public Plant(Game game, Vector2 position, float maxHealth, float actionCooldown, float plantCooldown, int cost) : base(game)
     {
-        Position = position;
-        
+        Transform.Position = position;
+        game.DecreaseSun(_cost);
+
         _health = new Health(maxHealth, Destroy);
         _actionCooldown = new Cooldown(actionCooldown, Action);
         _plantCooldown = new Cooldown(plantCooldown, () => IsPlantable = true);
@@ -27,12 +29,13 @@ public abstract class Plant : GameEntity, IAction, IHittable
         Logger.Log($"plant {{{this}}} has been planted");
     }
 
-    public override void Update()
+    public override void Update(double tick)
     {
-        _actionCooldown.Tick();
+        base.Update(tick);
+        _actionCooldown.Tick(tick);
 
-        if(!IsPlantable)
-            _plantCooldown.Tick();
+        if (!IsPlantable)
+            _plantCooldown.Tick(tick);
     }
 
     public virtual void Action()
@@ -43,10 +46,5 @@ public abstract class Plant : GameEntity, IAction, IHittable
     public void Hit(float damage)
     {
         _health.TakeDamage(damage);
-    }
-
-    public override string ToString()
-    {
-        return $"{GetType().Name}";
     }
 }
