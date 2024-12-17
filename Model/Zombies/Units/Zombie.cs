@@ -1,17 +1,39 @@
 ﻿using Model.General.Effects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Model.General.Entity;
 
 namespace Model.Zombies.Units;
 
-public abstract class Zombie
+public abstract class Zombie : GameEntity, IAction
 {
-    protected int Health { get; set; }
-    protected int Damage { get; set; }
-    protected IEffect? AppliedEffect { get; set; }
-    protected int InnitialCost { get; set; }
-    protected List<IEffect> effects { get; set; } = new List<IEffect>();
+    public event Action? OnAction;
+    public bool IsPlantable { get; private set; }
+
+    private Health _health;
+    private int _cost;
+    protected List<IEffect> Effects { get; set; } = new List<IEffect>();
+
+    public Zombie(Vector2 position, float maxHealth,  int cost)
+    {
+        Position = position;
+        
+        _health = new Health(maxHealth, Destroy);
+        _cost = cost;
+
+        Logger.Log($"plant {{{this}}} has been planted");
+    }
+
+    public void Action()
+    {
+        OnAction?.Invoke();
+    }
+
+    public void Hit(float damage)
+    {
+        _health.TakeDamage(damage);
+    }
+
+    public override string ToString()
+    {
+        return $"{GetType().Name}";
+    }
 }

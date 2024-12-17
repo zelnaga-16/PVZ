@@ -17,8 +17,8 @@ public struct Cooldown
         _cooldown = cooldown;
         _trueCooldown = cooldown;
         OnCooldown += onCooldown;
-
     }
+    
     public void Tick()
     {
         if (_trueCooldown <= 0)
@@ -29,7 +29,6 @@ public struct Cooldown
         else
         {
             _trueCooldown -= Constants.Tick;
-            
         }
     }
 }
