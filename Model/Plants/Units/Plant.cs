@@ -20,7 +20,7 @@ public abstract class Plant : GameEntity, IAction, IHittable
     {
         Transform.Position = position;
         game.DecreaseSun(_cost);
-
+        
         _health = new Health(maxHealth, Destroy);
         _actionCooldown = new Cooldown(actionCooldown, Action);
         _plantCooldown = new Cooldown(plantCooldown, () => IsPlantable = true);
@@ -46,5 +46,10 @@ public abstract class Plant : GameEntity, IAction, IHittable
     public void Hit(float damage)
     {
         _health.TakeDamage(damage);
+    }
+
+    public override string ToString()
+    {
+        return $"{GetType().Name}";
     }
 }

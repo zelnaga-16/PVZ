@@ -40,4 +40,9 @@ public abstract class Zombie : GameEntity, IAction, IHittable
     {
         _health.TakeDamage(damage);
     }
+
+    public override string ToString()
+    {
+        return $"{GetType().Name}";
+    }
 }
