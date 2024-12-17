@@ -1,10 +1,11 @@
-﻿using Model.General.Effects;
+﻿using Model.General;
+using Model.General.Effects;
 using Model.General.Entity;
 using Model.General.LogTools;
 
 namespace Model.Plants.Units;
 
-public abstract class Plant : GameEntity, IAction
+public abstract class Plant : GameEntity, IAction, IHittable
 {
     public event Action? OnAction;
     public bool IsPlantable { get; private set; }
@@ -15,8 +16,11 @@ public abstract class Plant : GameEntity, IAction
     private int _cost;
     protected List<IEffect> Effects { get; set; } = new List<IEffect>();
 
-    public Plant(float maxHealth, float actionCooldown, float plantCooldown, int cost)
+    public Plant(Game game, Vector2 position, float maxHealth, float actionCooldown, float plantCooldown, int cost) : base(game)
     {
+        Transform.Position = position;
+        game.DecreaseSun(_cost);
+
         _health = new Health(maxHealth, Destroy);
         _actionCooldown = new Cooldown(actionCooldown, Action);
         _plantCooldown = new Cooldown(plantCooldown, () => IsPlantable = true);
@@ -25,25 +29,22 @@ public abstract class Plant : GameEntity, IAction
         Logger.Log($"plant {{{this}}} has been planted");
     }
 
-    public override void Update()
+    public override void Update(double tick)
     {
-        _actionCooldown.Tick();
-        _plantCooldown.Tick();
+        base.Update(tick);
+        _actionCooldown.Tick(tick);
+
+        if (!IsPlantable)
+            _plantCooldown.Tick(tick);
     }
+
     public virtual void Action()
     {
         OnAction?.Invoke();
-        Console.WriteLine(DateTime.UtcNow.ToString());
-        Logger.Log($"plant {{{this}}} did something");
     }
 
     public void Hit(float damage)
     {
         _health.TakeDamage(damage);
-    }
-
-    public override string ToString()
-    {
-        return $"{GetType().Name}";
     }
 }

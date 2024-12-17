@@ -6,21 +6,32 @@ public abstract class GameEntity
 {
     public event Action? OnDestroy;
     public event Action? OnHitBoxEnter;
-    private Vector2 _position;
 
-    public Vector2 Position
-    {
-        get { return _position; }
-        set { _position = value; }
-    }
+    public Transform Transform { get; set; }
+    protected Game Game { get; set; }
     protected static readonly ILogger Logger;
+
+    public GameEntity(Game game)
+    {
+        Game = game;
+        Transform = new Transform();
+    }
 
     static GameEntity()
     {
         Logger = GetLogger.GetLoggerInstance();
     }
 
-    public abstract void Update();
+    public virtual void Update(double tick)
+    {
+
+    }
+
     protected virtual void Destroy() => OnDestroy?.Invoke();
     protected virtual void HitBoxEnter(GameEntity other) => OnHitBoxEnter?.Invoke();
+
+    public override string ToString()
+    {
+        return $"{GetType().Name}";
+    }
 }
