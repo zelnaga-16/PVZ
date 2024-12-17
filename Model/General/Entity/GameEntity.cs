@@ -7,7 +7,7 @@ public abstract class GameEntity
     public event Action? OnDestroy;
     public event Action? OnHitBoxEnter;
 
-    protected Vector2 Position;
+    public Vector2 Position;
     protected static readonly ILogger Logger;
 
     static GameEntity()

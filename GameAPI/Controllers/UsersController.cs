@@ -30,7 +30,7 @@ public class UsersController : Controller
     }
     public IActionResult Plant(string apiKey,int X,int Y,string plantName) 
     {
-        if (X > 100 || X <= 0)
+        if (X > 10 || X <= 0)
         {
             return BadRequest("Your X coordinate is eather smaller than 1 or bigger than 10.");
         }
@@ -39,7 +39,7 @@ public class UsersController : Controller
             return BadRequest("Your Y coordinate is eather smaller than 1 or bigger than 4.");
         }
 
-        Vector2 position = new Vector2(X*10-5,Y);
+        Vector2 position = new Vector2(X,Y);
         foreach (var entity in _entityList) 
         {
             if(entity.Position == position) 
