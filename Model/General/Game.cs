@@ -15,6 +15,12 @@ public class Game
     private double _tick = 0;
     private DateTime _lastTick = DateTime.UtcNow;
 
+    public Game()
+    {
+        GameEntities = new EntityList();
+        CalculateTick(DateTime.Now);
+    }
+
     private void CalculateTick(DateTime tickNow)
     {
         _tick = (tickNow - _lastTick).TotalMilliseconds * 0.001;
