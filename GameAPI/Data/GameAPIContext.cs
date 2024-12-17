@@ -13,6 +13,7 @@ public class GameAPIContext : DbContext
     }
 
     public DbSet<GameAPI.Models.User> User { get; set; }
+    public DbSet<Game> Game { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasKey(x => x.Id);

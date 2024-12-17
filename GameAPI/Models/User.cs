@@ -8,4 +8,5 @@ public class User
     public string Password { get; set; }
     public string Email { get; set; }
     public string APIKey { get; set; }
+    public int Points {  get; set; }
 }

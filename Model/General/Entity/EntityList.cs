@@ -10,6 +10,7 @@ public class EntityList : List<GameEntity>
     }
     public void UpdateEntities(double tick) 
     {
+        if (this.Count<=0) return; 
         foreach (GameEntity entity in this) 
         {
             entity.Update(tick);
