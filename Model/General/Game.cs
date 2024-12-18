@@ -53,7 +53,7 @@ public class Game
             {
                 continue;
             }
-            PlantFabrics.Add(plantName,fabric);
+            PlantFabrics.Add(plantName.ToLower(),fabric);
         }
     }
     private PlantFabric SelectFabric(string plantName) 
@@ -96,7 +96,7 @@ public class Game
         int prevPool = WavePool*2;
         while (WavePool > 0) 
         {
-            zombieFabrics[random.Next(zombieFabrics.Count)].TryCreate(new Vector2(random.NextDouble()+11,random.Next(1,5)));
+            _zombieFabrics[random.Next(_zombieFabrics.Count)].TryCreate(new Vector2(random.NextDouble()+11,random.Next(1,5)));
         }
         WavePool = ZombiePool - prevPool>0?prevPool:ZombiePool;
         ZombiePool -= prevPool;

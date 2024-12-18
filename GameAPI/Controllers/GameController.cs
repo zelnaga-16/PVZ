@@ -9,6 +9,9 @@ using GameAPI.Models;
 using Model.Plants;
 using System.Xml.Linq;
 using Model.Zombies.Units;
+using Model.Plants.Fabrics;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace GameAPI.Controllers;
 
@@ -25,7 +28,7 @@ public class GameController : Controller
     }
 
     [HttpGet]
-    public IActionResult GameStart(string apiKey,string? opponentKey)
+    public IActionResult GameStart(string apiKey,string? opponentKey,string plantNames)
     {
         string gameKey = null;
         opponentKey = opponentKey.IsNullOrEmpty()?"0":opponentKey;
@@ -43,7 +46,7 @@ public class GameController : Controller
             gameKey = Convert.ToBase64String(key).Replace("/", "").Replace("+", "");
             GameToDB.GameKey = gameKey;
 
-            Model.General.Game game = new Model.General.Game();
+            Model.General.Game game = new Model.General.Game(plantNames.Split(',').ToList());
 
             _games.Add(gameKey, game);
 
@@ -56,7 +59,7 @@ public class GameController : Controller
             _context.Game.Add(GameToDB);
             _context.SaveChanges();
 
-            Task.Run(() => UpdateGame(game,false));
+            Task.Run(() => UpdateGame(game));
 
         }
         else
@@ -66,15 +69,28 @@ public class GameController : Controller
         return Ok("your key is: "+gameKey);
     }
     [HttpGet]
-    public IActionResult Progress(string apiKey, string gameKey) 
+    public IActionResult Progress(string gameKey)
     {
-        Models.Game gameFromDb = _context.Game.Where((g) => g.User.APIKey == apiKey && g.GameKey == gameKey).FirstOrDefault();
+        Models.Game gameFromDb = _context.Game.Where((g) => g.GameKey == gameKey).FirstOrDefault();
         if (gameFromDb == null)
         {
-            return NotFound("Can't find your game session. Are you sure you created it?");
+            //return new HttpResponseMessage(HttpStatusCode.NotFound);
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
-        return Ok();
+
+        string JsonString = "{ ";
+
+        foreach (GameEntity entity in MainGame.GameEntities)
+        {
+            JsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+        }
+        JsonString += " }";
+        var content = new StringContent(JsonString);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
+        
+
+        return Ok(JsonString);
 
     }
 
@@ -96,64 +112,42 @@ public class GameController : Controller
         {
             return BadRequest("Your Y coordinate is eather smaller than 1 or bigger than 4.");
         }
-        PlantsFabric plantsFabric = new PlantsFabric(MainGame);
+        PlantFabric plantFabric = MainGame.PlantFabrics[plantName.ToLower()];
 
-        GameEntity plant = ChoosePlant(plantsFabric, new Vector2(X, Y),plantName);
+        Transform transform = new Transform();
+        transform.Position = new Vector2(X, Y);
+        transform.Size = new Vector2(1,1);
 
-
-        GameEntity gameEntity = EntityCheck<Plant>(MainGame,plant.Transform);
-        if (gameEntity != null)
+        if (!IsPositionFree<Plant>(MainGame, transform))
         {
             return BadRequest("You tried to place a plant where another plant is. Please remove previous plant if you realy want to place your here.");
         }
-        MainGame.ToAddList.Add(plant);
-
+        GameEntity plant = plantFabric.TryCreate(transform.Position);
 
         return Ok("Great, you planted successfully.");
     }
-    private GameEntity ChoosePlant(PlantsFabric fabric,Vector2 pos,string plantName) 
-    {
-        switch (plantName.ToLower()) 
-        {
-            case "peashooter":
-                return fabric.CreatePeashooter(pos);
-            case "sunflower":
-                return fabric.CreateSunFlower(pos);
-        }
 
-        return null;
-    }
-    private void UpdateGame(Model.General.Game game,bool IsOpponentBot) 
+    private void UpdateGame(Model.General.Game game) 
     {
-        OpponentBot opponentBot = new OpponentBot(game);
-        if (IsOpponentBot == false)
+        while (!game.IsGameEnded)
         {
-            while (true)
-            {
-                game.GameTick(DateTime.Now);
-                Console.WriteLine("Yahoo");
-            }
+            game.GameTick();
+            Thread.Sleep(50);
         }
-        else 
-        {
-            while (true)
-            {
-                game.GameTick(DateTime.Now);
-                Console.WriteLine("Yahoo");
-                
-            }
-        }
+        Console.WriteLine(game.IsGameWinned);
     }
-    private GameEntity EntityCheck<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
+    private bool IsPositionFree<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
     {
-        foreach (T entity in game.GameEntities)
+        foreach (GameEntity entity in game.GameEntities)
         {
+            if (entity is not T)
+                continue;
             if (hitbox.isInside(entity.Transform))
             {
-                return entity;
+                return false;
             }
         }
-        return null;
+        return true;
     }
     
 }
