@@ -15,20 +15,26 @@ public class EntityList : List<GameEntity>
         entity.OnDestroy += () => _game.ToRemoveList.Add(entity);
     }
 
-    public void AddList(List<GameEntity> toAdd)
-    {
-        foreach (GameEntity entity in toAdd)
-            base.Add(entity);
-
-        toAdd.Clear();
-    }
-
     public void UpdateEntities()
     {
         foreach (GameEntity entity in this)
         {
             entity.Update();
         }
+    }
+    
+    public void LateUpdateEntities()
+    {
+        AddList(_game.ToAddList);
+        RemoveList(_game.ToRemoveList);
+    }
+
+    public void AddList(List<GameEntity> toAdd)
+    {
+        foreach (GameEntity entity in toAdd)
+            base.Add(entity);
+
+        toAdd.Clear();
     }
 
     public void RemoveList(List<GameEntity> toDelete)

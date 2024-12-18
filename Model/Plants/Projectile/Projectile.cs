@@ -21,7 +21,6 @@ public class Projectile : GameEntity
     {
         base.Update();
         _move.MoveEntity(Game.Tick);
-        Logger.Log("proj x: " + Transform.Position.X);
     }
 
     protected override void HitBoxEnter(GameEntity other)
@@ -37,6 +36,6 @@ public class Projectile : GameEntity
 
     protected override GameEntity IsHitBoxEnter<T>()
     {
-        return base.IsHitBoxEnter<GameEntity>();
+        return base.IsHitBoxEnter<Zombie>();
     }
 }

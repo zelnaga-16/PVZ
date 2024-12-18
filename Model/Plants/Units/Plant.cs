@@ -2,41 +2,38 @@
 using Model.General.Effects;
 using Model.General.Entity;
 using Model.General.LogTools;
+using Model.Zombies.Units;
 
 namespace Model.Plants.Units;
 
 public abstract class Plant : GameEntity, IAction, IHittable
 {
     public event Action? OnAction;
-    public bool IsPlantable { get; private set; }
-
     private Health _health;
-    private Cooldown _actionCooldown;
-    private Cooldown _plantCooldown;
-    private int _cost;
+
+    protected Cooldown ActionCooldown;
     protected List<IEffect> Effects { get; set; } = new List<IEffect>();
 
-    public Plant(Game game, Vector2 position, float maxHealth, float actionCooldown, float plantCooldown, int cost) : base(game)
+    public Plant(Game game, Vector2 position, float maxHealth, float actionCooldown) : base(game)
     {
-        Transform.Size = new Vector2(1, 1);
-        Transform.Position = new Vector2(position.X - Transform.Size.X * 0.5, position.Y);
-        game.DecreaseSun(_cost);
+        Transform.Size = new Vector2(0.8, 1);
+        Transform.Position = new Vector2(position.X - 0.5, position.Y);
 
         _health = new Health(maxHealth, Destroy);
-        _actionCooldown = new Cooldown(actionCooldown, Action);
-        _plantCooldown = new Cooldown(plantCooldown, () => IsPlantable = true);
-        _cost = cost;
+        ActionCooldown = new Cooldown(actionCooldown, Action);
 
-        Logger.Log($"plant {{{this}}} has been planted");
+        Logger.Log($"plant {{{this}}} has been planted, on x:{Transform.Position.X} y:{Transform.Position.Y}");
     }
 
     public override void Update()
     {
         base.Update();
-        _actionCooldown.Tick(Game.Tick);
+        ActionCooldown.Tick(Game.Tick);
+    }
 
-        if (!IsPlantable)
-            _plantCooldown.Tick(Game.Tick);
+    protected override GameEntity IsHitBoxEnter<T>()
+    {
+        return base.IsHitBoxEnter<Plant>();
     }
 
     public virtual void Action()

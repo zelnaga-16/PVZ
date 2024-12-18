@@ -5,5 +5,5 @@ namespace Model.Plants.Projectile;
 
 public class PeashooterProjectile : Projectile
 {
-    public PeashooterProjectile(Game game, Vector2 position) : base(game, position, 20, 3) { }
+    public PeashooterProjectile(Game game, Vector2 position) : base(game, position, 15, 3) { }
 }
