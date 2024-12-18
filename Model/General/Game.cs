@@ -1,5 +1,7 @@
 ﻿using Model.General.Entity;
 using Model.Plants.Fabrics;
+using Model.Zombies.Fabric;
+using Model.Zombies.Fabrics;
 using Model.Zombies.Units;
 using System;
 using System.Collections.Generic;
@@ -15,10 +17,16 @@ public class Game
     public EntityList GameEntities { get; private set; }
     public List<GameEntity> ToRemoveList { get; private set; }
     public List<GameEntity> ToAddList { get; private set; }
+    private List<ZombieFabric> zombieFabrics { get; set; }
+    public List<int> zombieCount { get; set; }
     public int Suns { get; private set; } = 50;
-    public int ZoombiePool { get; private set; } = 100;
+    public int ZombiePool { get; private set; } = 5;
+    public int WavePool { get; private set; } = 5;
     public double Tick = 50 * 0.001;
     private DateTime _lastTick = DateTime.UtcNow;
+
+    public bool IsGameEnded = false;
+    public bool IsGameWinned = false;
 
 
     public Game()
@@ -27,6 +35,15 @@ public class Game
 
         ToRemoveList = new List<GameEntity>();
         ToAddList = new List<GameEntity>();
+
+        zombieFabrics = [
+            new BasicZombieFabric(this),
+            new BasicZombieFabric(this)
+            ];
+
+        zombieCount = new List<int>() 
+        {0,0,0,0};
+        
     }
 
     private void CalculateTick()
@@ -38,18 +55,40 @@ public class Game
 
     public void GameTick()
     {
+        
         GameEntities.UpdateEntities();
         GameEntities.LateUpdateEntities();
+        if(!IsAnyZombieOnRow(1) && !IsAnyZombieOnRow(2) && !IsAnyZombieOnRow(3) && !IsAnyZombieOnRow(4))
+        {
+            CreateWave();
+        }
+    }
+    public void CreateWave() 
+    {
+        if(ZombiePool <= 0) 
+        {
+            IsGameWinned = true;
+            IsGameEnded = true;
+            return; 
+        }
+        Random random = new Random();
+        int prevPool = WavePool*2;
+        while (WavePool > 0) 
+        {
+            zombieFabrics[random.Next(zombieFabrics.Count)].TryCreate(new Vector2(random.NextDouble()+11,random.Next(1,5)));
+        }
+        WavePool = ZombiePool - prevPool>0?prevPool:ZombiePool;
+        ZombiePool -= prevPool;
     }
 
     #region game state methods
 
     public bool IsAnyZombieOnRow(int row)
     {
-        foreach(GameEntity entity in GameEntities)
-            if(entity is Zombie && entity.Transform.Position.Y == row)
-                return true;
-
+        if (zombieCount[row - 1] > 0) 
+        {
+            return true;
+        }
         return false;
     }
 
@@ -58,5 +97,5 @@ public class Game
     public void IncreaseSun(int suns) => Suns += suns;
     public void DecreaseSun(int suns) => Suns -= suns;
 
-    public void DeacreaseZoombiePool(int value) => ZoombiePool -= value;
+    public void DeacreaseZoombiePool(int value) => WavePool -= value;
 }

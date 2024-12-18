@@ -38,6 +38,10 @@ public abstract class Zombie : GameEntity, IAction, IHittable
         {
             ActionCooldown.IsActive = false;
             _move.MoveEntity(Game.Tick);
+            if (Transform.Position.X <= 0)
+            {
+                Game.IsGameEnded = true;
+            }
         }
         else
         {
@@ -50,6 +54,11 @@ public abstract class Zombie : GameEntity, IAction, IHittable
     {
         FrontPlant = (Plant)base.IsHitBoxEnter<Plant>();
         return FrontPlant;
+    }
+    protected override void Destroy()
+    {
+        Game.zombieCount[Transform.Position.Y - 1]--;
+        base.Destroy();
     }
 
     public void Action()

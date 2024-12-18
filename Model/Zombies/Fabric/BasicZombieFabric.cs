@@ -15,4 +15,5 @@ public class BasicZombieFabric : ZombieFabric
         Spawn(zombie);
         return zombie;
     }
+    
 }
