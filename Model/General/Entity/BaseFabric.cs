@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Model.General.Entity;
 
-public abstract class EntitiesFabric
+public abstract class BaseFabric : GameEntity
 {
-    protected Game Game { get; set; }
-
-    public EntitiesFabric(Game game)
+    public BaseFabric(Game game) : base(game)
     {
         Game = game;
     }
+
+    public abstract GameEntity? TryCreate(Vector2 position);
 }

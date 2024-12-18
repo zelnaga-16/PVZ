@@ -29,11 +29,11 @@ public abstract class GameEntity
         IsHitBoxEnter<GameEntity>();
     }
 
-    protected virtual GameEntity IsHitBoxEnter<T>() where T : GameEntity
+    protected virtual GameEntity IsHitBoxEnter<T>()
     {
-        foreach (T entity in Game.GameEntities)
+        foreach (GameEntity entity in Game.GameEntities)
         {
-            if (entity == this)
+            if (entity is not T || entity == this)
                 continue;
 
             if (Transform.isInside(entity.Transform))

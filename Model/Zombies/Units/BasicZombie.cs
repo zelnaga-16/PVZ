@@ -9,6 +9,5 @@ public class BasicZombie : Zombie
     public override void Update()
     {
         base.Update();
-        Logger.Log("x: " + Transform.Position.X);
     }
 }

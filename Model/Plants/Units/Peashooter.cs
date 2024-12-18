@@ -1,6 +1,7 @@
 ﻿using Model.General;
 using Model.General.Entity;
 using Model.Plants.Projectile;
+using Model.Plants.Projectile.Fabrics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,22 +12,28 @@ namespace Model.Plants.Units;
 
 public class Peashooter : Plant, IShoot
 {
-    private ProjectileFabric _fabric;
+    BaseFabric _projectileFabric;
 
-    public Peashooter(Game game, Vector2 position) : base(game, position, 25, 3, 10, 100)
+    public Peashooter(Game game, Vector2 position) : base(game, position, 25, 3)
     {
-        _fabric = new ProjectileFabric(game);
+        _projectileFabric = new PeashooterProjectileFabric(Game);
     }
-
+     
     public override void Action()
     {
         base.Action();
-        Shoot();
+
+        if (Game.IsAnyZombieOnRow(Transform.Position.Y))
+        {
+            Shoot(_projectileFabric);
+        }
+
+        Logger.Log($"IsAnyZombieOnRow({Transform.Position.Y}): {Game.IsAnyZombieOnRow(Transform.Position.Y)}");
     }
 
-    public void Shoot()
+    public void Shoot(BaseFabric projectileFabric)
     {
+        _projectileFabric.TryCreate(Transform.Position);
         Logger.Log("Shoot");
-        _fabric.CreatePeashooterProj(Transform.Position);
     }
 }
