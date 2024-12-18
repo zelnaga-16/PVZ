@@ -56,7 +56,7 @@ public class GameController : Controller
             _context.Game.Add(GameToDB);
             _context.SaveChanges();
 
-            Task.Run(() => UpdateGame(game));
+            Task.Run(() => UpdateGame(game,false));
 
         }
         else
