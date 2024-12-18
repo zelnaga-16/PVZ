@@ -17,7 +17,8 @@ public class Game
     public EntityList GameEntities { get; private set; }
     public List<GameEntity> ToRemoveList { get; private set; }
     public List<GameEntity> ToAddList { get; private set; }
-    private List<ZombieFabric> zombieFabrics { get; set; }
+    private List<ZombieFabric> _zombieFabrics { get; set; }
+    public Dictionary<string,PlantFabric> PlantFabrics { get; set; }
     public List<int> zombieCount { get; set; }
     public int Suns { get; private set; } = 50;
     public int ZombiePool { get; private set; } = 5;
@@ -29,23 +30,43 @@ public class Game
     public bool IsGameWinned = false;
 
 
-    public Game()
+    public Game(List<string> plantNames)
     {
         GameEntities = new EntityList(this);
 
         ToRemoveList = new List<GameEntity>();
         ToAddList = new List<GameEntity>();
 
-        zombieFabrics = [
+        _zombieFabrics = [
             new BasicZombieFabric(this),
             new BasicZombieFabric(this)
             ];
 
         zombieCount = new List<int>() 
         {0,0,0,0};
-        
-    }
 
+        PlantFabrics = new Dictionary<string, PlantFabric>();
+        foreach(string plantName in plantNames) 
+        {
+            PlantFabric fabric = SelectFabric(plantName);
+            if (fabric == null) 
+            {
+                continue;
+            }
+            PlantFabrics.Add(plantName,fabric);
+        }
+    }
+    private PlantFabric SelectFabric(string plantName) 
+    {
+        switch (plantName.ToLower()) 
+        {
+            case "sunflower":
+                return new SunFlowerFabric(this);
+            case "peashooter":
+                return new PeashooterFabric(this);
+        }
+        return null;
+    }
     private void CalculateTick()
     {
         DateTime tickNow = DateTime.Now;
