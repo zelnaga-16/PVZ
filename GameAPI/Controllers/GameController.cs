@@ -12,6 +12,7 @@ using Model.Zombies.Units;
 using Model.Plants.Fabrics;
 using System.Net;
 using System.Net.Http.Headers;
+using System;
 
 namespace GameAPI.Controllers;
 
@@ -23,8 +24,6 @@ public class GameController : Controller
     public GameController(GameAPIContext context)
     {
         _context = context;
-        
-        
     }
 
     [HttpPost]
@@ -59,7 +58,7 @@ public class GameController : Controller
             _context.Game.Add(GameToDB);
             _context.SaveChanges();
 
-            Task.Run(() => UpdateGame(game));
+            Task.Run(() => UpdateGame(game,_context));
 
         }
         else
@@ -101,13 +100,26 @@ public class GameController : Controller
             if (entity is not T) continue;
             jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",", ".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
-        jsonString.Remove(jsonString.Length - 1);
+        jsonString = jsonString.Remove(jsonString.Length - 1);
         jsonString += " ]";
         var content = new StringContent(jsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
 
         return Ok(jsonString);
+    }
+    
+    private void Update(Model.General.Game game) 
+    {
+        string gameKey = _games.Where((p) => p.Value == game).FirstOrDefault().Key;
+        Models.Game gameFromDb = _context.Game.Where((g) => g.GameKey == gameKey).First();
+        gameFromDb.IsInProgress = false;
+        gameFromDb.IsWin = game.IsGameWinned;
+        gameFromDb.Score = 100;
+
+        _context.Game.Update(gameFromDb);
+        _context.SaveChanges();
+        _games.Remove(gameKey);
     }
 
     [HttpPost]
@@ -143,23 +155,14 @@ public class GameController : Controller
         return Ok("Great, you planted successfully.");
     }
 
-    private void UpdateGame(Model.General.Game game) 
+    private void UpdateGame(Model.General.Game game,GameAPIContext aPIContext) 
     {
         while (!game.IsGameEnded)
         {
             game.GameTick();
             Thread.Sleep(50);
         }
-        string gameKey = _games.Where((p)=>p.Value == game).FirstOrDefault().Key;
-        Models.Game gameFromDb = _context.Game.Where((g) =>g.GameKey == gameKey).FirstOrDefault();
-        gameFromDb.IsInProgress = false;
-        gameFromDb.IsWin = game.IsGameWinned;
-        gameFromDb.Score = 100;
-
-        _context.Game.Update(gameFromDb);
-        _context.SaveChanges();
-        _games.Remove(gameKey);
-        
+        //Update(game);
         Console.WriteLine(game.IsGameWinned);
     }
     private bool IsPositionFree<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
