@@ -69,7 +69,7 @@ public class GameController : Controller
         return Ok("your key is: "+gameKey);
     }
     [HttpGet]
-    public IActionResult Progress(string gameKey)
+    public IActionResult Progress(string gameKey,string entitiesName)
     {
         Models.Game gameFromDb = _context.Game.Where((g) => g.GameKey == gameKey).FirstOrDefault();
         if (gameFromDb == null)
@@ -78,21 +78,36 @@ public class GameController : Controller
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
 
+        switch (entitiesName.ToLower()) 
+        {
+            case "all":
+                return GetEntities<GameEntity>(MainGame);
+            case "plant":
+                return GetEntities<GameEntity>(MainGame);
+            case "projectile":
+                return GetEntities<GameEntity>(MainGame);
+            case "zombie":
+                return GetEntities<GameEntity>(MainGame);
+        }
+        return BadRequest("Wrong entitiesName");
+    }
+
+    private IActionResult GetEntities<T>(Model.General.Game game) where T : GameEntity 
+    {
         string jsonString = "[ ";
 
-        foreach (GameEntity entity in MainGame.GameEntities)
+        foreach (GameEntity entity in game.GameEntities)
         {
-            jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+            if (entity is not T) continue;
+            jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",", ".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
         jsonString.Remove(jsonString.Length - 1);
         jsonString += " ]";
         var content = new StringContent(jsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
-        
 
         return Ok(jsonString);
-
     }
 
     [HttpPost]
