@@ -23,4 +23,9 @@ app.MapControllerRoute(
     pattern: "{controller=Users}/{action=MainGet}"
     );
 
+app.UseCors(builder => builder
+     .AllowAnyOrigin()
+     .AllowAnyMethod()
+     .AllowAnyHeader());
+
 app.Run();

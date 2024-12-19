@@ -5,7 +5,7 @@ namespace PVZView.Controllers;
 
 public class UserController : Controller
 {
-    private static readonly string _url = @"http://127.0.0.1:5236/user/";
+    private static readonly string _url = @"http://127.0.0.1:5236/users/";
     private readonly HttpClient _client = new HttpClient();
 
     [HttpGet]
@@ -47,6 +47,7 @@ public class UserController : Controller
         };
 
         FormUrlEncodedContent contentBody = new FormUrlEncodedContent(body);
+        Console.WriteLine(_url + @"Registrate");
         HttpResponseMessage response = await _client.PostAsync(_url+ @"Registrate", contentBody);
         Console.WriteLine(await response.Content.ReadAsStringAsync());
 

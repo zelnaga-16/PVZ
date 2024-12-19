@@ -12,9 +12,10 @@ public class ViewController : Controller
     }
 
     [HttpGet("{game_key}")]
-    public IActionResult Game()
+    public IActionResult Game(string game_key)
     {
-        ViewBag.Frame = frame;
+        ViewBag.game_key = game_key;
+        Console.WriteLine(game_key);
         return View();
     }
 }

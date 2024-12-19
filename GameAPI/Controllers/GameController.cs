@@ -78,19 +78,20 @@ public class GameController : Controller
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
 
-        string JsonString = "[ ";
+        string jsonString = "[";
 
         foreach (GameEntity entity in MainGame.GameEntities)
         {
-            JsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+            jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
-        JsonString += " ]";
-        var content = new StringContent(JsonString);
+        jsonString = jsonString.Remove(jsonString.Length - 1);
+        jsonString += "]";
+        var content = new StringContent(jsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
         
 
-        return Ok(JsonString);
+        return Ok(jsonString);
 
     }
 

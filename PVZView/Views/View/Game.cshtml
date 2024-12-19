@@ -15,12 +15,26 @@
     let frame = '[{"name": "BasicZombie","x": "7.00995231","y": "3"},{"name": "SunFlower","x": "0.5","y": "1"},{"name": "SunFlower","x": "1.5","y": "2"}]';
     let jsonable = JSON.parse(frame);
     let field = document.getElementById("field");
+    let url = 'http://127.0.0.1:5236/game/Progress?gameKey=@ViewBag.game_key';
+    const options = {
+        method: "GET"
+    };
 
-    function hih()
+    async function hih()
     {
-        jsonable.forEach(function(obj)
-        {
-            parseEntity(obj);
+        field.innerHTML = "";
+        console.log(url);
+
+        fetch(url, options).then(blob => {
+            console.log(blob);
+            return blob.json();
+        }).then(json => {
+            console.log(json);
+
+            json.forEach(function(obj)
+            {
+                parseEntity(obj);
+            });
         });
     }
 
@@ -33,17 +47,17 @@
         let img = document.createElement("div");
         img.style.width= '50px';
         img.style.left = (192 * fix(entity.x)) + 'px';
-        console.log(parseFloat(entity.x));
-        console.log(Math.round(192 * fix(entity.x)) + 'px');
-        console.log(192 * fix(entity.x) + 'px');
-        img.style.height= '130px';
+        img.style.height= '120px';
         img.style.top = (145 * entity.y) + 'px';
-        console.log((145 * entity.y) + 'px');
         img.style.position='absolute';
         if(entity.name == "BasicZombie")
             img.style.backgroundColor = 'green';
         else if(entity.name == "SunFlower")
             img.style.backgroundColor = 'yellow';
+        else if(entity.name == "Peashooter")
+            img.style.backgroundColor = 'red';
+        else if(entity.name == "PeashooterProjectile")
+            img.style.backgroundColor = "blue";
 
         console.log(img);
         field.appendChild(img);
