@@ -43,7 +43,7 @@ public class GameController : Controller
             var key = new byte[32];
             using (var generator = RandomNumberGenerator.Create())
                 generator.GetBytes(key);
-            gameKey = Convert.ToBase64String(key).Replace("/", "").Replace("+", "");
+            gameKey = Convert.ToBase64String(key).Replace("/", "").Replace("+", "").Replace("=", "");
             GameToDB.GameKey = gameKey;
 
             Model.General.Game game = new Model.General.Game(plantNames.Split(',').ToList());
@@ -74,17 +74,17 @@ public class GameController : Controller
         Models.Game gameFromDb = _context.Game.Where((g) => g.GameKey == gameKey).FirstOrDefault();
         if (gameFromDb == null)
         {
-            //return new HttpResponseMessage(HttpStatusCode.NotFound);
+            return NotFound("Can't find your game session. Are you sure you created it?");
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
 
-        string JsonString = "{ ";
+        string JsonString = "[ ";
 
         foreach (GameEntity entity in MainGame.GameEntities)
         {
             JsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
-        JsonString += " }";
+        JsonString += " ]";
         var content = new StringContent(JsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
