@@ -49,9 +49,8 @@ namespace PlantRedactor
             };
 
             FormUrlEncodedContent contentBody = new FormUrlEncodedContent(body);
-            HttpResponseMessage response = await _client.PostAsync(_url+@"/game/Plant", contentBody);
-
-            MessageBox.Show(response.Content.ToString());
+            HttpResponseMessage response = await _client.PostAsync(_url+@"/game/Plant", contentBody); 
+            MessageBox.Show(await response.Content.ReadAsStringAsync());
             //Console.WriteLine(await response.Content.ReadAsStringAsync());
             return;
 

@@ -134,13 +134,49 @@ public class GameController : Controller
         transform.Position = new Vector2(X, Y);
         transform.Size = new Vector2(1,1);
 
-        if (!IsPositionFree<Plant>(MainGame, transform))
+        if (IsPositionFree<Plant>(MainGame, transform) != null)
         {
             return BadRequest("You tried to place a plant where another plant is. Please remove previous plant if you realy want to place your here.");
+        }
+        if (MainGame.Suns < plantFabric.Cost) 
+        {
+            return BadRequest("You don't have enought suns.");
         }
         GameEntity plant = plantFabric.TryCreate(transform.Position);
 
         return Ok("Great, you planted successfully.");
+    }
+
+    [HttpPost]
+    public IActionResult Remove(string apiKey, string gameKey, double X, int Y)
+    {
+        Models.Game gameFromDb = _context.Game.Where((g) => g.User.APIKey == apiKey && g.GameKey == gameKey).FirstOrDefault();
+        if (gameFromDb == null || !gameFromDb.IsInProgress)
+        {
+            return NotFound("Can't find your game session. Are you sure it exists?");
+        }
+        Model.General.Game MainGame = _games[gameFromDb.GameKey];
+
+        if (X > 10 || X <= 0)
+        {
+            return BadRequest("Your X coordinate is eather smaller than 1 or bigger than 10.");
+        }
+        if (Y > 4 || Y <= 0)
+        {
+            return BadRequest("Your Y coordinate is eather smaller than 1 or bigger than 4.");
+        }
+
+        Transform transform = new Transform();
+        transform.Position = new Vector2(X, Y);
+        transform.Size = new Vector2(1, 1);
+        GameEntity removedEntity = IsPositionFree<Plant>(MainGame, transform);
+        if (removedEntity == null)
+        {
+            return BadRequest("You tried to remove empty space.");
+        }
+        MainGame.GameEntities.Remove(removedEntity);
+
+        return Ok("Great, you removed "+removedEntity.ToString()+".");
     }
 
     private void UpdateGame(Model.General.Game game) 
@@ -151,7 +187,7 @@ public class GameController : Controller
             Thread.Sleep(50);
         }
     }
-    private bool IsPositionFree<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
+    private GameEntity IsPositionFree<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
     {
         foreach (GameEntity entity in game.GameEntities)
         {
@@ -159,10 +195,10 @@ public class GameController : Controller
                 continue;
             if (hitbox.isInside(entity.Transform))
             {
-                return false;
+                return entity;
             }
         }
-        return true;
+        return null;
     }
     
 }
