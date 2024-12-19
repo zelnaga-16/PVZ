@@ -27,7 +27,7 @@ public class GameController : Controller
         
     }
 
-    [HttpGet]
+    [HttpPost]
     public IActionResult GameStart(string apiKey,string? opponentKey,string plantNames)
     {
         string gameKey = null;
@@ -69,39 +69,54 @@ public class GameController : Controller
         return Ok("your key is: "+gameKey);
     }
     [HttpGet]
-    public IActionResult Progress(string gameKey)
+    public IActionResult Progress(string gameKey,string entitiesName)
     {
         Models.Game gameFromDb = _context.Game.Where((g) => g.GameKey == gameKey).FirstOrDefault();
-        if (gameFromDb == null)
+        if (gameFromDb == null || !gameFromDb.IsInProgress)
         {
-            return NotFound("Can't find your game session. Are you sure you created it?");
+            return NotFound("Can't find your game session. Are you sure it exists?");
         }
-        Model.General.Game MainGame = _games[gameFromDb.GameKey];
+        Model.General.Game MainGame = _games[gameKey];
 
-        string jsonString = "[";
-
-        foreach (GameEntity entity in MainGame.GameEntities)
+        switch (entitiesName.ToLower()) 
         {
-            jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+            case "all":
+                return GetEntities<GameEntity>(MainGame);
+            case "plant":
+                return GetEntities<GameEntity>(MainGame);
+            case "projectile":
+                return GetEntities<GameEntity>(MainGame);
+            case "zombie":
+                return GetEntities<GameEntity>(MainGame);
         }
-        jsonString = jsonString.Remove(jsonString.Length - 1);
-        jsonString += "]";
+        return BadRequest("Wrong entitiesName");
+    }
+
+    private IActionResult GetEntities<T>(Model.General.Game game) where T : GameEntity 
+    {
+        string jsonString = "[ ";
+
+        foreach (GameEntity entity in game.GameEntities)
+        {
+            if (entity is not T) continue;
+            jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",", ".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+        }
+        jsonString.Remove(jsonString.Length - 1);
+        jsonString += " ]";
         var content = new StringContent(jsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
-        
 
         return Ok(jsonString);
-
     }
 
-    [HttpGet]
+    [HttpPost]
     public IActionResult Plant(string apiKey, string gameKey, double X, int Y, string plantName)
     {
         Models.Game gameFromDb = _context.Game.Where((g) => g.User.APIKey == apiKey && g.GameKey == gameKey).FirstOrDefault();
-        if (gameFromDb == null)
+        if (gameFromDb == null || !gameFromDb.IsInProgress)
         {
-            return NotFound("Can't find your game session. Are you sure you created it?");
+            return NotFound("Can't find your game session. Are you sure it exists?");
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
         
@@ -135,6 +150,16 @@ public class GameController : Controller
             game.GameTick();
             Thread.Sleep(50);
         }
+        string gameKey = _games.Where((p)=>p.Value == game).FirstOrDefault().Key;
+        Models.Game gameFromDb = _context.Game.Where((g) =>g.GameKey == gameKey).FirstOrDefault();
+        gameFromDb.IsInProgress = false;
+        gameFromDb.IsWin = game.IsGameWinned;
+        gameFromDb.Score = 100;
+
+        _context.Game.Update(gameFromDb);
+        _context.SaveChanges();
+        _games.Remove(gameKey);
+        
         Console.WriteLine(game.IsGameWinned);
     }
     private bool IsPositionFree<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
