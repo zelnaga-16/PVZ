@@ -24,7 +24,7 @@ namespace PVZView
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=View}/{action=Index}/{id?}");
 
             app.Run();
         }

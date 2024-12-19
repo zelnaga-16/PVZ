@@ -27,6 +27,7 @@ public class UsersController : Controller
         _context = context;
 
     }
+
     [HttpPost]
     public IActionResult Registrate(string Login,string Password,string Email)
     {
@@ -50,7 +51,8 @@ public class UsersController : Controller
         _context.SaveChanges();
         return Ok();
     }
-    [HttpGet]
+
+    [HttpPost]
     public IActionResult Login(string Login, string Password)
     {
         Password = Password.ToSHA256String();
@@ -58,6 +60,7 @@ public class UsersController : Controller
         if (_context.User.Where(x => x.Login == Login && x.Password == Password).FirstOrDefault() == null) return BadRequest("Your login or password is wrong.");
         return Ok();
     }
+
     private bool IsValidEmail(string email)
     {
         var trimmedEmail = email.Trim();

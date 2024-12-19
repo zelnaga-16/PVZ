@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "PVZ-Bad-View";
+}
+
+<div class="dright col-md-9 col-lg-9 col-sm-6">
+    <button class="btn btn-warning" onclick="hih()">
+        ???!$!#$#32423432
+    </button>
+    <div id="field" style="position: absolute; top: 0px; left: 0px;">
+
+    </div>
+</div>
+
+<script>
+    let frame = '[{"name": "BasicZombie","x": "7.00995231","y": "3"},{"name": "SunFlower","x": "0.5","y": "1"},{"name": "SunFlower","x": "1.5","y": "2"}]';
+    let jsonable = JSON.parse(frame);
+    let field = document.getElementById("field");
+
+    function hih()
+    {
+        jsonable.forEach(function(obj)
+        {
+            parseEntity(obj);
+        });
+    }
+
+    function fix(x) {
+      return Number.parseFloat(x);
+    }
+
+    function parseEntity(entity)
+    {
+        let img = document.createElement("div");
+        img.style.width= '50px';
+        img.style.left = (192 * fix(entity.x)) + 'px';
+        console.log(parseFloat(entity.x));
+        console.log(Math.round(192 * fix(entity.x)) + 'px');
+        console.log(192 * fix(entity.x) + 'px');
+        img.style.height= '130px';
+        img.style.top = (145 * entity.y) + 'px';
+        console.log((145 * entity.y) + 'px');
+        img.style.position='absolute';
+        if(entity.name == "BasicZombie")
+            img.style.backgroundColor = 'green';
+        else if(entity.name == "SunFlower")
+            img.style.backgroundColor = 'yellow';
+
+        console.log(img);
+        field.appendChild(img);
+    }
+</script>
