@@ -25,15 +25,21 @@ public class UsersController : Controller
     public UsersController(GameAPIContext context)
     {
         _context = context;
+        
 
     }
-
     [HttpPost]
-    public IActionResult Registrate(string Login,string Password,string Email)
+    public IActionResult Registrate(string? login,string? password,string? email)
     {
-        Password = Password.ToSHA256String();
+        if(_context.User.Select((u) => u.Email == email || u.Login == login).FirstOrDefault()) 
+        {
+            return BadRequest("Your Login or Email already in use on our site");
+        }
 
-        if (IsValidEmail(Email))
+        password = password.ToSHA256String();
+
+
+        if (!IsValidEmail(email))
         {
             return BadRequest("Your email is impossible");
         }
@@ -42,25 +48,23 @@ public class UsersController : Controller
             generator.GetBytes(key);
         User user = new User
         {
-            Email = Email,
-            Password = Password,
-            Login = Login,
-            APIKey = Convert.ToBase64String(key).Replace("/", "").Replace("+", "")
+            Email = email,
+            Password = password,
+            Login = login,
+            APIKey = Convert.ToBase64String(key).Replace("/", "").Replace("+", "").Replace("=","")
         };
         _context.User.Add(user);
         _context.SaveChanges();
         return Ok();
     }
-
     [HttpPost]
-    public IActionResult Login(string Login, string Password)
+    public IActionResult Login(string LoginOrEmail, string Password)
     {
         Password = Password.ToSHA256String();
 
-        if (_context.User.Where(x => x.Login == Login && x.Password == Password).FirstOrDefault() == null) return BadRequest("Your login or password is wrong.");
+        if (_context.User.Where(x => (x.Login == LoginOrEmail || x.Email == LoginOrEmail) && x.Password == Password).FirstOrDefault() == null) return BadRequest("Your login or password is wrong.");
         return Ok();
     }
-
     private bool IsValidEmail(string email)
     {
         var trimmedEmail = email.Trim();
