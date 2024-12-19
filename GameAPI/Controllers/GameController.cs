@@ -27,7 +27,7 @@ public class GameController : Controller
         
     }
 
-    [HttpGet]
+    [HttpPost]
     public IActionResult GameStart(string apiKey,string? opponentKey,string plantNames)
     {
         string gameKey = null;
@@ -78,23 +78,24 @@ public class GameController : Controller
         }
         Model.General.Game MainGame = _games[gameFromDb.GameKey];
 
-        string JsonString = "[ ";
+        string jsonString = "[ ";
 
         foreach (GameEntity entity in MainGame.GameEntities)
         {
-            JsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+            jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
-        JsonString += " ]";
-        var content = new StringContent(JsonString);
+        jsonString.Remove(jsonString.Length - 1);
+        jsonString += " ]";
+        var content = new StringContent(jsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = content };
         
 
-        return Ok(JsonString);
+        return Ok(jsonString);
 
     }
 
-    [HttpGet]
+    [HttpPost]
     public IActionResult Plant(string apiKey, string gameKey, double X, int Y, string plantName)
     {
         Models.Game gameFromDb = _context.Game.Where((g) => g.User.APIKey == apiKey && g.GameKey == gameKey).FirstOrDefault();
