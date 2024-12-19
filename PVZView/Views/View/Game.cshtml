@@ -3,24 +3,19 @@
 }
 
 <div class="dright col-md-9 col-lg-9 col-sm-6">
-    <button class="btn btn-warning" onclick="hih()">
-        ???!$!#$#32423432
-    </button>
     <div id="field" style="position: absolute; top: 0px; left: 0px;">
 
     </div>
 </div>
 
 <script>
-    let frame = '[{"name": "BasicZombie","x": "7.00995231","y": "3"},{"name": "SunFlower","x": "0.5","y": "1"},{"name": "SunFlower","x": "1.5","y": "2"}]';
-    let jsonable = JSON.parse(frame);
     let field = document.getElementById("field");
     let url = 'http://127.0.0.1:5236/game/Progress?gameKey=@ViewBag.game_key';
     const options = {
         method: "GET"
     };
 
-    async function hih()
+    async function getState()
     {
         field.innerHTML = "";
         console.log(url);
@@ -44,22 +39,31 @@
 
     function parseEntity(entity)
     {
-        let img = document.createElement("div");
-        img.style.width= '50px';
+        let img = document.createElement("img");
         img.style.left = (192 * fix(entity.x)) + 'px';
-        img.style.height= '120px';
+        img.style.height= '140px';
         img.style.top = (145 * entity.y) + 'px';
         img.style.position='absolute';
+
         if(entity.name == "BasicZombie")
-            img.style.backgroundColor = 'green';
+            img.src = 'https://media.discordapp.net/attachments/1172222742855172178/1319287106815787018/BasicZombie.png?ex=6765695d&is=676417dd&hm=ce882cc9b3195f679303775cc2f6753f0818982fec9931c23a4f4c6de6c5671a&=&format=webp&quality=lossless';
+        else if(entity.name == "ConeheadZombie")
+            img.src = "https://media.discordapp.net/attachments/1172222742855172178/1319287106547482707/ConeheadZombie.png?ex=6765695d&is=676417dd&hm=0a2ba1de013f4eddef351a3980471a169dd3bdb64c30041b27d3cce4baec3872&=&format=webp&quality=lossless";
+        else if(entity.name = "BucketheadZombie")
+            img.src = "https://media.discordapp.net/attachments/1172222742855172178/1319287107096936521/BucketheadZombie.png?ex=6765695d&is=676417dd&hm=089ff99fd699c152bb57331317221c4b2cc9b564624edcd874fc9f1b0277462c&=&format=webp&quality=lossless";
         else if(entity.name == "SunFlower")
-            img.style.backgroundColor = 'yellow';
+            img.src = 'https://media.discordapp.net/attachments/1172222742855172178/1319293377988268105/SunFlower.png?ex=67656f34&is=67641db4&hm=54337868ed0cee98aabd50cfaf8cfda7fd141bb003b8a56d1bdddd5e015b6bc9&=&format=webp&quality=lossless';
         else if(entity.name == "Peashooter")
-            img.style.backgroundColor = 'red';
+            img.src = 'https://media.discordapp.net/attachments/1172222742855172178/1319290728874119189/Peashooter.png?ex=67656cbd&is=67641b3d&hm=cc9dab72af1fd39d71e8e3c3e99ac5367db055b571011a82f35a57838379ebd6&=&format=webp&quality=lossless';
         else if(entity.name == "PeashooterProjectile")
-            img.style.backgroundColor = "blue";
+            img.src = 'https://media.discordapp.net/attachments/1172222742855172178/1319291944043806761/PeashooterProjectile.png?ex=67656dde&is=67641c5e&hm=520dd098de1cf1e1aec5e75b1e1a713faa0f8dddb25048d6b73d5170cc476eee&=&format=webp&quality=lossless';
+        else if(entity.name == "WallNut")
+            img.src = 'https://media.discordapp.net/attachments/1172222742855172178/1319293811674841088/WallNut.png?ex=67656f9b&is=67641e1b&hm=7e1ae6c552173dec0959e18737f037d9ccf7ef34b8bfc1a1ad9bf41b6a49d018&=&format=webp&quality=lossless';
 
         console.log(img);
+        console.log(img.src);
         field.appendChild(img);
     }
+
+     setInterval(getState, 500);
 </script>
