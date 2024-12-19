@@ -9,5 +9,6 @@ public class SunFlower : Plant
     public override void Action()
     {
         base.Action();
+        Game.IncreaseSun(25);
     }
 }
