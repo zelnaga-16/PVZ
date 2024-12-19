@@ -13,7 +13,7 @@ public class Game
     private List<ZombieFabric> _zombieFabrics { get; set; }
     public Dictionary<string, PlantFabric> PlantFabrics { get; set; }
     public List<int> zombieCount { get; set; }
-    public int Suns { get; private set; } = 75;
+    public int Suns { get; private set; } = 100;
     public int ZombiePool { get; private set; } = 50;
     public int WavePool { get; private set; } = 1;
     public double Tick = 20 * 0.001;
@@ -93,7 +93,12 @@ public class Game
         int prevPool = WavePool * 2;
         while (WavePool > 0)
         {
-            _zombieFabrics[random.Next(_zombieFabrics.Count)].TryCreate(new Vector2((random.NextDouble() * 2) + 11, random.Next(1, 5)));
+            int zombieId = int.MaxValue;
+            while (WavePool < zombieId)
+            {
+                zombieId = random.Next(_zombieFabrics.Count > WavePool ? WavePool : _zombieFabrics.Count);
+            }
+            _zombieFabrics[zombieId].TryCreate(new Vector2((random.NextDouble() * 2) + 11, random.Next(1, 5)));
         }
         WavePool = ZombiePool - prevPool > 0 ? prevPool : ZombiePool;
         ZombiePool -= prevPool;

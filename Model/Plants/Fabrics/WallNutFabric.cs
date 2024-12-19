@@ -16,7 +16,7 @@ internal class WallNutFabric : PlantFabric
     {
         if (IsPlantable())
         {
-            Plant plant = new SunFlower(Game, position);
+            Plant plant = new WallNut(Game, position);
             Plant(plant);
             return plant;
         }

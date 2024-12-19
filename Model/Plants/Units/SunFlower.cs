@@ -5,7 +5,7 @@ namespace Model.Plants.Units;
 
 public class SunFlower : Plant
 {
-    public SunFlower(Game game, Vector2 position) : base(game, position, 25, 15)  { }
+    public SunFlower(Game game, Vector2 position) : base(game, position, 25, 10)  { }
     public override void Action()
     {
         base.Action();

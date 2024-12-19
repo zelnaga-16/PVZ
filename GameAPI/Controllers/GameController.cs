@@ -101,7 +101,7 @@ public class GameController : Controller
             if (entity is not T) continue;
             jsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",", ".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
-        jsonString.Remove(jsonString.Length - 1);
+        jsonString = jsonString.Remove(jsonString.Length - 1);
         jsonString += " ]";
         var content = new StringContent(jsonString);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -150,17 +150,6 @@ public class GameController : Controller
             game.GameTick();
             Thread.Sleep(50);
         }
-        string gameKey = _games.Where((p)=>p.Value == game).FirstOrDefault().Key;
-        Models.Game gameFromDb = _context.Game.Where((g) =>g.GameKey == gameKey).FirstOrDefault();
-        gameFromDb.IsInProgress = false;
-        gameFromDb.IsWin = game.IsGameWinned;
-        gameFromDb.Score = 100;
-
-        _context.Game.Update(gameFromDb);
-        _context.SaveChanges();
-        _games.Remove(gameKey);
-        
-        Console.WriteLine(game.IsGameWinned);
     }
     private bool IsPositionFree<T>(Model.General.Game game, Transform hitbox) where T : GameEntity
     {
