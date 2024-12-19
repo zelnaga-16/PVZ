@@ -82,7 +82,7 @@ public class GameController : Controller
 
         foreach (GameEntity entity in MainGame.GameEntities)
         {
-            JsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
+            JsonString += "{\"name\":\"" + entity.ToString() + "\",\"x\":\"" + entity.Transform.Position.X.ToString().Replace(",",".") + "\",\"y\":\"" + entity.Transform.Position.Y + "\"},";
         }
         JsonString += " ]";
         var content = new StringContent(JsonString);
